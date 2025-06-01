@@ -12,3 +12,7 @@ out
 build
 .vscode
 bin
+
+# Direnv
+.direnv
+.envrc.local
