@@ -9,6 +9,15 @@ doc: |
   JT600 GPS tracking protocol supporting both binary and text message formats.
   Used by various Chinese GPS tracker devices with features including RFID,
   temperature sensors, and multiple positioning modes.
+  
+  ## JT701 PADLOCK SUPPORT:
+  The JT701 GPS padlock is fully supported through enhanced P45 message parsing
+  and extended status flag interpretation for padlock-specific functionality:
+  - RFID unlock events with card validation
+  - Remote lock/unlock commands
+  - Tamper detection and security alarms
+  - Unauthorized access monitoring
+  - Lock mechanism status tracking
 
 seq:
   - id: messages
@@ -203,10 +212,19 @@ types:
         value: (status_byte2 & 0x08) != 0 or (status_byte2 & 0x10) != 0
       overspeed_alarm:
         value: (status_byte2 & 0x10) != 0
+      # JT701 padlock-specific: tamper detection
+      tamper_detected:
+        value: (status_byte2 & 0x20) != 0
       fatigue_driving:
         value: (status_byte3 & 0x04) != 0
       tow_alarm:
         value: (status_byte3 & 0x08) != 0
+      # JT701 padlock-specific: unauthorized access attempt
+      unauthorized_access:
+        value: (status_byte3 & 0x10) != 0
+      # JT701 padlock-specific: lock mechanism fault
+      lock_mechanism_fault:
+        value: (status_byte3 & 0x20) != 0
 
   version3_data:
     seq:
@@ -509,6 +527,25 @@ types:
         type: str
         encoding: ASCII
         size-eos: true
+    instances:
+      # JT701 padlock-specific: enhanced event source interpretation
+      event_type:
+        value: |
+          event_source == "1" ? "rfid_unlock" :
+          event_source == "2" ? "manual_unlock" :
+          event_source == "3" ? "remote_unlock" :
+          event_source == "4" ? "unauthorized_access" :
+          event_source == "5" ? "tamper_detected" :
+          "general"
+      # JT701 padlock-specific: RFID card validation
+      rfid_valid:
+        value: rfid != "0000000000"
+      # JT701 padlock-specific: lock status indication
+      lock_status:
+        value: rfid_valid ? "unlocked" : "locked"
+      # JT701 padlock-specific: security event detection
+      is_security_event:
+        value: event_source == "4" or event_source == "5"
 
   peripherals_message:
     seq:
@@ -595,6 +632,10 @@ enums:
     6: overspeed
     7: movement
     8: low_battery
+    # JT701 padlock-specific alert types
+    9: tamper_detected
+    10: unauthorized_access
+    11: lock_mechanism_fault
 
   status_flags:
     0x0001: valid_position
@@ -606,3 +647,18 @@ enums:
     0x0080: device_blocked
     0x0800: low_battery_alarm
     0x4000: fault_alarm
+    # JT701 padlock-specific status flags
+    0x0040: lock_status_unlocked
+    0x1000: tamper_alarm
+    0x2000: unauthorized_access_alarm
+    0x8000: lock_mechanism_fault
+    
+  # JT701 padlock-specific P45 event sources
+  p45_event_sources:
+    1: rfid_unlock
+    2: manual_unlock
+    3: remote_unlock
+    4: unauthorized_access
+    5: tamper_detected
+    6: low_battery_padlock
+    7: lock_mechanism_error

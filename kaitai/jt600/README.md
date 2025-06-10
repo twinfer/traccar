@@ -60,11 +60,14 @@ Message types include:
 - **JT100**: Entry-level tracker (specifications not widely documented)
 
 #### Related Jointech Models
-- **JT701**: GPS padlock with tracking
+- **JT701**: GPS padlock with tracking **[FULLY SUPPORTED]**
   - 12000 mAh battery
   - RFID unlock capability
   - Dual SIM support
   - IP67 waterproof
+  - Remote lock/unlock commands
+  - Tamper detection and security alarms
+  - Unauthorized access monitoring
   
 - **JT704**: Container tracking
   - 3-year standby capability
@@ -124,6 +127,10 @@ Binary Status Flags:
 Text Mode Alarms:
 SOS, Power cut, Vibration, Movement
 Overspeed, Low battery, GPS antenna issues
+
+JT701 Padlock-Specific Alarms:
+Tamper detection, Unauthorized access, RFID validation
+Lock mechanism fault, Remote unlock events
 ```
 
 ## Common Applications
@@ -134,6 +141,8 @@ Overspeed, Low battery, GPS antenna issues
 - **Fleet Management**: Small fleet tracking solutions
 - **Container Tracking**: Shipping and logistics (JT701/JT704)
 - **Access Control**: RFID-based vehicle/area access
+- **Padlock Security**: GPS-enabled padlocks with remote monitoring (JT701)
+- **Cargo Protection**: Tamper-resistant container security
 
 ## Platform Compatibility
 
@@ -157,4 +166,37 @@ The JT600 protocol automatically detects:
 - Protocol version for extended features
 - Message type for appropriate parsing
 
-The JT600 protocol's flexibility with both binary efficiency and text readability, combined with solar power capabilities and sensor integration, makes it suitable for diverse tracking applications from personal safety to asset monitoring in remote locations.
+## JT701 Padlock Enhanced Features
+
+### RFID Security System
+- **P45 Message Enhancement**: Extended event source codes for padlock operations
+- **RFID Card Management**: Validation and tracking of authorized access cards
+- **Event Source Mapping**:
+  - `1`: RFID unlock event
+  - `2`: Manual unlock (backup key)
+  - `3`: Remote unlock (SMS/server command)
+  - `4`: Unauthorized access attempt
+  - `5`: Tamper detection triggered
+
+### Security Monitoring
+- **Real-time Alerts**: Immediate notification of security events
+- **Lock Status Tracking**: Current lock state (locked/unlocked)
+- **Access Logging**: Complete audit trail of unlock events
+- **Battery Monitoring**: 12000mAh battery status and charging
+- **Location Tracking**: GPS position during security events
+
+### Command Support
+- **Remote Lock/Unlock**: Server-initiated lock operations
+- **RFID Management**: Add/remove authorized cards
+- **Security Configuration**: Enable/disable security modes
+- **Status Queries**: Real-time lock and battery status
+
+### Enhanced Status Flags
+```
+0x0040: Lock status (unlocked when set)
+0x1000: Tamper alarm detected
+0x2000: Unauthorized access alarm
+0x8000: Lock mechanism fault
+```
+
+The JT600 protocol's flexibility with both binary efficiency and text readability, combined with solar power capabilities and sensor integration, makes it suitable for diverse tracking applications from personal safety to asset monitoring in remote locations. The enhanced JT701 support provides enterprise-grade security features for high-value cargo and asset protection.
