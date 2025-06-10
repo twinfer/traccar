@@ -56,22 +56,34 @@ Verizon Connect
 1- Reveal Mobile - OBD-II tracker
 2- Reveal Fixed - Hardwired tracker
 3- Reveal Asset - Battery-powered asset tracker
+
+GoSafe Technology (500K+ connected units globally)
+
+1- G1S - Basic GPS/GSM tracker
+2- G2S - OBD-II enhanced tracker
+3- G737 - Professional fleet device
+4- G739 - Heavy-duty CAN bus tracker
+5- G758 - Long-life asset tracker
+6- G787 - Advanced telematics gateway
+7- G866 - Motorcycle/bike tracker
+8- G980 - High-end camera-equipped
  
 
 
 Coverage Analysis: Top Manufacturers vs Our Implementation
 
-  ✅ Fully Covered (2/6 major manufacturers):
+  ✅ Fully Covered (3/7 major manufacturers):
 
   1. Teltonika (222K+ units) - Protocol ✅ Kaitai ✅
   2. Queclink (53K+ units) - GL200 Protocol ✅ Kaitai ✅
+  3. GoSafe Technology (500K+ units) - Protocol ✅ Kaitai ✅
 
-  ⚠️ Partially Covered (1/6):
+  ⚠️ Partially Covered (1/7):
 
-  3. CalAmp (11K+ units) - Protocol ✅ Kaitai ❌
+  4. CalAmp (11K+ units) - Protocol ✅ Kaitai ❌
 
-  ❌ Missing (3/6):
+  ❌ Missing (3/7):
 
-  4. Geotab - No Traccar support
-  5. Samsara - No Traccar support
-  6. Verizon Connect - No Traccar support
+  5. Geotab - No Traccar support
+  6. Samsara - No Traccar support
+  7. Verizon Connect - No Traccar support

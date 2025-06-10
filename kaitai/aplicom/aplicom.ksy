@@ -14,6 +14,17 @@ seq:
   - id: message
     type: aplicom_message
 
+instances:
+  # Simplified IMEI validation (basic range check)
+  # Note: Full Luhn algorithm validation should be implemented in the parser
+  validate_imei:
+    params:
+      - id: imei
+        type: u8
+    value: |
+      # Basic validation - IMEI should be 15 digits (greater than 10^14)
+      imei >= 100000000000000
+
 types:
   aplicom_message:
     seq:
@@ -69,8 +80,14 @@ types:
       calculated_imei:
         value: |
           unit_id_value == 0 ? 0 :
-          # Try TC65i calculation
-          unit_id_value + 0x14143B4000000
+          # Try TC65i calculation first
+          _root.validate_imei(unit_id_value + 0x14143B4000000) ? unit_id_value + 0x14143B4000000 :
+          # Try TC65 v2.8 calculation
+          _root.validate_imei(358244010000000 + ((unit_id_value + 0xA8180) & 0xFFFFFF)) ? 358244010000000 + ((unit_id_value + 0xA8180) & 0xFFFFFF) :
+          # Try TC65 v2.0 calculation
+          _root.validate_imei(unit_id_value + 0x1437207000000) ? unit_id_value + 0x1437207000000 :
+          # Fall back to unit_id if none validate
+          unit_id_value
 
   extended_device_id:
     seq:
@@ -351,6 +368,199 @@ types:
   event_data_block:
     seq:
       - id: event_data
+        type:
+          switch-on: _parent.event
+          cases:
+            event_types::eb_trailer_data: eb_trailer_data
+            event_types::event_data_hex: can_data_block
+            _: raw_event_data
+        size-eos: true
+
+  raw_event_data:
+    seq:
+      - id: data
+        size-eos: true
+
+  can_data_block:
+    seq:
+      - id: packet_identifier
+        type: u1
+        size: 3
+      - id: firmware_version
+        type: u1
+      - id: count
+        type: u1
+      - id: batch_count
+        type: u1
+      - id: selector_bits
+        type: u2
+      - id: timestamp
+        type: u4
+      - id: reserved
+        size: 8
+      - id: can_values
+        type: can_value_block
+        repeat: expr
+        repeat-expr: count
+      - id: can_pids
+        type: u4
+        repeat: expr
+        repeat-expr: count
+
+  can_value_block:
+    seq:
+      - id: value_data
+        size: 8
+
+  eb_trailer_data:
+    seq:
+      - id: header
+        type: str
+        size: 2
+        encoding: ASCII
+        valid: '"EB"'
+      - id: firmware_version
+        type: u1
+      - id: event_code
+        type: u2
+      - id: data_validity
+        type: u1
+      - id: towed_count
+        type: u1
+      - id: data_length
+        type: u2
+      - id: trailer_blocks
+        type: eb_trailer_block
+        repeat: eos
+
+  eb_trailer_block:
+    seq:
+      - id: towed_position
+        type: u1
+      - id: block_type
+        type: u1
+        enum: eb_block_types
+      - id: block_length
+        type: u1
+      - id: block_data
+        type:
+          switch-on: block_type
+          cases:
+            eb_block_types::brake_flags: eb_brake_flags
+            eb_block_types::wheel_speed: eb_wheel_speed_data
+            eb_block_types::axle_weight: eb_axle_weight_data
+            eb_block_types::tire_pressure: eb_tire_pressure_data
+            eb_block_types::brake_lining: eb_brake_lining_data
+            eb_block_types::odometer_data: eb_odometer_data
+            eb_block_types::abs_status: eb_abs_status_data
+            eb_block_types::brake_minmax: eb_brake_minmax_data
+            eb_block_types::missing_pgn: eb_missing_pgn_data
+            eb_block_types::towed_detection: eb_towed_detection_data
+            _: eb_raw_block_data
+        size: block_length
+
+  eb_brake_flags:
+    seq:
+      - id: flags
+        size-eos: true
+
+  eb_wheel_speed_data:
+    seq:
+      - id: wheel_speed_raw
+        type: u2
+      - id: wheel_speed_diff_raw
+        type: u2
+      - id: lateral_accel_raw
+        type: u1
+      - id: vehicle_speed_raw
+        type: u2
+    instances:
+      wheel_speed_kmh:
+        value: wheel_speed_raw / 256.0
+      wheel_speed_diff_kmh:
+        value: wheel_speed_diff_raw / 256.0 - 125.0
+      lateral_acceleration_g:
+        value: lateral_accel_raw / 10.0 - 12.5
+      vehicle_speed_kmh:
+        value: vehicle_speed_raw / 256.0
+
+  eb_axle_weight_data:
+    seq:
+      - id: axle_weight_raw
+        type: u2
+    instances:
+      axle_weight_kg:
+        value: axle_weight_raw * 2
+
+  eb_tire_pressure_data:
+    seq:
+      - id: tire_pressure_raw
+        type: u1
+      - id: pneumatic_pressure_raw
+        type: u1
+    instances:
+      tire_pressure_kpa:
+        value: tire_pressure_raw * 10
+      pneumatic_pressure_kpa:
+        value: pneumatic_pressure_raw * 5
+
+  eb_brake_lining_data:
+    seq:
+      - id: brake_lining_raw
+        type: u1
+      - id: brake_temperature_raw
+        type: u1
+    instances:
+      brake_lining_mm:
+        value: brake_lining_raw * 0.4
+      brake_temperature_c:
+        value: brake_temperature_raw * 10
+
+  eb_odometer_data:
+    seq:
+      - id: odometer_raw
+        type: u4
+      - id: trip_odometer_raw
+        type: u4
+      - id: service_odometer_raw
+        type: u4
+    instances:
+      odometer_meters:
+        value: odometer_raw * 5
+      trip_odometer_meters:
+        value: trip_odometer_raw * 5
+      service_odometer_meters:
+        value: (service_odometer_raw - 2105540607) * 5
+
+  eb_abs_status_data:
+    seq:
+      - id: abs_status_counter
+        type: u2
+      - id: atvb_status_counter
+        type: u2
+      - id: vdc_active_counter
+        type: u2
+
+  eb_brake_minmax_data:
+    seq:
+      - id: brake_minmax_data
+        size-eos: true
+
+  eb_missing_pgn_data:
+    seq:
+      - id: missing_pgn_data
+        size-eos: true
+
+  eb_towed_detection_data:
+    seq:
+      - id: reserved
+        type: u1
+      - id: towed_detection_status
+        type: u4
+
+  eb_raw_block_data:
+    seq:
+      - id: raw_data
         size-eos: true
 
   tachograph_time_data:
@@ -644,3 +854,15 @@ enums:
     0x10000: pulse_rate_1_present
     0x20000: pulse_rate_2_present
     0x80000: cell_info_present
+
+  eb_block_types:
+    0x01: brake_flags
+    0x02: wheel_speed
+    0x03: axle_weight
+    0x04: tire_pressure
+    0x05: brake_lining
+    0x06: odometer_data
+    0x0A: abs_status
+    0x0B: brake_minmax
+    0x0C: missing_pgn
+    0x0D: towed_detection

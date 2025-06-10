@@ -14,6 +14,11 @@ seq:
   - id: message
     type: cellocator_message
 
+instances:
+  # Mathematical constant pi for coordinate conversions
+  pi:
+    value: 3.14159265359
+
 types:
   cellocator_message:
     seq:
@@ -168,9 +173,9 @@ types:
         type: u2
     instances:
       longitude:
-        value: longitude_raw / 3.141592653589793 * 180.0 / 100000000.0
+        value: longitude_raw / _root.pi * 180.0 / 100000000.0
       latitude:
-        value: latitude_raw / 3.141592653589793 * 180.0 / 100000000.0
+        value: latitude_raw / _root.pi * 180.0 / 100000000.0
       altitude_meters:
         value: altitude_raw * 0.01
       speed_mps:
@@ -180,7 +185,7 @@ types:
       speed_knots:
         value: speed_mps * 1.943844
       course_degrees:
-        value: course_raw / 3.141592653589793 * 180.0 / 1000.0
+        value: course_raw / _root.pi * 180.0 / 1000.0
 
   alternative_position_data:
     seq:
@@ -302,9 +307,9 @@ types:
         type: u2
     instances:
       longitude:
-        value: longitude_raw / 3.141592653589793 * 180.0 / 100000000.0
+        value: longitude_raw / _root.pi * 180.0 / 100000000.0
       latitude:
-        value: latitude_raw / 3.141592653589793 * 180.0 / 100000000.0
+        value: latitude_raw / _root.pi * 180.0 / 100000000.0
       altitude_meters:
         value: altitude_raw * 0.01
       speed_mps:
@@ -312,7 +317,7 @@ types:
       speed_knots:
         value: speed_mps * 1.943844
       course_degrees:
-        value: course_raw / 3.141592653589793 * 180.0 / 1000.0
+        value: course_raw / _root.pi * 180.0 / 1000.0
 
   time_module_data:
     seq:

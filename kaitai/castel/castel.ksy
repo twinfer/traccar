@@ -9,6 +9,35 @@ seq:
   - id: message
     type: castel_frame
 
+instances:
+  # PID length mapping function based on Java implementation
+  get_pid_length:
+    params:
+      - id: pid
+        type: u1
+    value: |
+      # 1-byte PIDs
+      (pid == 0x04 or pid == 0x05 or pid == 0x06 or pid == 0x07 or pid == 0x08 or pid == 0x09 or 
+       pid == 0x0b or pid == 0x0d or pid == 0x0e or pid == 0x0f or pid == 0x11 or pid == 0x12 or 
+       pid == 0x13 or pid == 0x1c or pid == 0x1d or pid == 0x1e or pid == 0x2c or pid == 0x2d or 
+       pid == 0x2e or pid == 0x2f or pid == 0x30 or pid == 0x33 or pid == 0x43 or pid == 0x45 or 
+       pid == 0x46 or pid == 0x47 or pid == 0x48 or pid == 0x49 or pid == 0x4a or pid == 0x4b or 
+       pid == 0x4c or pid == 0x51 or pid == 0x52 or pid == 0x5a) ? 1 :
+      # 2-byte PIDs  
+      (pid == 0x02 or pid == 0x03 or pid == 0x0a or pid == 0x0c or pid == 0x10 or pid == 0x14 or 
+       pid == 0x15 or pid == 0x16 or pid == 0x17 or pid == 0x18 or pid == 0x19 or pid == 0x1a or 
+       pid == 0x1b or pid == 0x1f or pid == 0x21 or pid == 0x22 or pid == 0x23 or pid == 0x31 or 
+       pid == 0x32 or pid == 0x3c or pid == 0x3d or pid == 0x3e or pid == 0x3f or pid == 0x42 or 
+       pid == 0x44 or pid == 0x4d or pid == 0x4e or pid == 0x50 or pid == 0x53 or pid == 0x54 or 
+       pid == 0x55 or pid == 0x56 or pid == 0x57 or pid == 0x58 or pid == 0x59) ? 2 :
+      # 4-byte PIDs
+      (pid == 0x00 or pid == 0x01 or pid == 0x20 or pid == 0x24 or pid == 0x25 or pid == 0x26 or 
+       pid == 0x27 or pid == 0x28 or pid == 0x29 or pid == 0x2a or pid == 0x2b or pid == 0x34 or 
+       pid == 0x35 or pid == 0x36 or pid == 0x37 or pid == 0x38 or pid == 0x39 or pid == 0x3a or 
+       pid == 0x3b or pid == 0x40 or pid == 0x41 or pid == 0x4f) ? 4 :
+      # Default to 1 byte for unknown PIDs
+      1
+
 types:
   castel_frame:
     seq:
