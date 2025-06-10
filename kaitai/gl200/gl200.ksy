@@ -8,6 +8,10 @@ doc: |
   Queclink GL200 protocol parser for GPS tracking devices.
   This protocol is primarily text-based with comma-separated values.
   Messages start with +RESP:, +BUFF:, or +ACK: and may end with $.
+  
+  Supports all Queclink devices including GL200, GL300, GL320MG, GV series,
+  and other models using the same protocol format. The GL320MG uses the same
+  message structure as GL300 series but with enhanced 4G/LTE connectivity.
 
 seq:
   - id: message

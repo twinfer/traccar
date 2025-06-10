@@ -23,6 +23,7 @@ Queclink devices can be identified by protocol version prefixes in their message
 | `10` | GV55 LITE | Budget version of GV55 |
 | `11`, `40` | GL500 | Advanced portable tracker |
 | `1A`, `30` | GL300 | Updated portable tracker |
+| `1A`, `30` | GL320MG | Multi-mode global 4G tracker (GL300 series) |
 | `1F`, `36` | GV500 | Professional vehicle tracker |
 | `27` | GV300W | Waterproof variant |
 | `28` | GL300VC | Voice-capable variant |
@@ -58,7 +59,7 @@ Queclink devices can be identified by protocol version prefixes in their message
 
 ### Key Features by Model
 - **GL200**: Portable, waterproof IP65, 1300mAh battery, 3-axis accelerometer, temperature sensor
-- **GL300 Series**: Enhanced battery life, multiple I/O ports
+- **GL300 Series**: Enhanced battery life, multiple I/O ports (includes GL320MG with 4G/LTE connectivity)
 - **GV Series**: Vehicle-focused with OBD support, harsh driving detection
 - **GMT Series**: Asset tracking optimized, long battery life
 - **W Suffix**: Waterproof variants (IP67)
@@ -181,7 +182,7 @@ The protocol version prefix identifies the device model:
 - **02/21**: GL200
 - **04/35**: GV200
 - **06/25**: GV300
-- **1A/30**: GL300
+- **1A/30**: GL300/GL320MG
 - **1F/36**: GV500
 - **C2**: GV600M
 - **DE**: GL500M
