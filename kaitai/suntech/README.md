@@ -13,6 +13,7 @@ The Suntech protocol is a hybrid GPS tracking protocol supporting both text-base
 
 #### ST300 Series
 - **ST300** - Basic vehicle tracker
+- **ST310U** - Entry-level vehicle tracker with basic GPS and jamming detection
 - **ST340** - Advanced vehicle tracker with CAN
 - **ST300R** - Ruggedized variant
 - **ST300K** - Kit version
@@ -68,6 +69,7 @@ The Suntech protocol is a hybrid GPS tracking protocol supporting both text-base
 | Series | GPS | LBS | CAN | OBD | Crash | BLE | Temp | Fuel |
 |--------|-----|-----|-----|-----|-------|-----|------|------|
 | ST300 | ✓ | ✓ | | | ✓ | | ✓ | |
+| ST310U | ✓ | ✓ | | | | | | |
 | ST340 | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ | ✓ |
 | ST400 | ✓ | ✓ | | | | | ✓ | |
 | ST500 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
